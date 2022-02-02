@@ -1,0 +1,3 @@
+- `python3 -m pip install Flask`
+- change data_path in `config.py` to point to subject-modules data dir.
+- python3 -m flask run

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <style>
+        body {
+            width: 800px;
+            margin: auto;
+        }
+        .group {
+            padding: 10px;
+        }
+
+        .info {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    {% for group in groups %}
+        <div class="group" onclick="location.href='/submissions/{{ group.id }}'">
+            <span class="group-info">{{ group.id }}</span>
+            <span class="group-info">{{ scores.get_total(group.id) }}</span>
+            <span class="group-info">{{ group.name }}</span>
+        </div>
+    {% endfor %}
+</body>
+</html>

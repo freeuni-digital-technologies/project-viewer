@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <style>
+        /* Style the tab */
+        .tab {
+            height: 40px;
+          overflow: hidden;
+          border: 1px solid #ccc;
+          background-color: #f1f1f1;
+        }
+
+        /* Style the buttons that are used to open the tab content */
+        .tab button, .tab input, .second-tab button {
+          background-color: inherit;
+          float: left;
+          border: none;
+          outline: none;
+          cursor: pointer;
+          padding: 14px 16px;
+          transition: 0.3s;
+        }
+
+        /* Change background color of buttons on hover */
+        .tab button:hover {
+          background-color: #ddd;
+        }
+
+        /* Create an active/current tablink class */
+        .tab button.active {
+          background-color: #ccc;
+        }
+
+        /* Style the tab content */
+        .tabcontent {
+          display: none;
+          border-top: none;
+        }
+        iframe {
+            width: 100vw;
+            height: calc(100vh - 80px);
+        }
+
+        .tab input {
+            width: 40px;
+        }
+
+        .second-tab textarea {
+            width: 600px;
+            height: 40px;
+        }
+
+        .second-tab {
+            background-color: #f1f1f1;
+        }
+        #about-frame {
+            width: 800px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="scores">
+
+    </div>
+    <div class="tab">
+        <button class="tablinks" >{{ group["id"] }}</button>
+        <button class="tablinks" onclick="window.location.href='../'">home</button>
+        <button class="tablinks" onclick="window.location.href='./{{ group["id"] }}/prev'">prev</button>
+        <button class="tablinks" onclick="window.location.href='./{{ group["id"] }}/next'">next</button>
+        <button class="tablinks" id="default-tab" onclick="openTab(event, 'index')">index</button>
+        <button class="tablinks" onclick="openTab(event, 'about')">about</button>
+        <button class="tablinks" >{{ group["name"] }}</button>
+        <button class="tablinks" onclick="sendScore('concept')">concept</button>
+        <input onchange="sendScore('concept')" value="{{ score.concept }}" class="tablinks score" type="number" id="score-concept">
+        <button class="tablinks" onclick="sendScore('design')">design</button>
+        <input onchange="sendScore('design')" value="{{ score.design }}" type="number" id="score-design">
+        <button class="tablinks" onclick="sendScore('functionality')">functionality</button>
+        <input onchange="sendScore('functionality')" value="{{ score.functionality }}" type="number" id="score-functionality">
+        <button class="tablinks" onclick="sendScore('report')">report</button>
+        <input onchange="sendScore('report')" value="{{ score.report }}" type="number" id="score-report">
+        <button id="send-scores" class="tablinks" onclick="sendScores()">send</button>
+{#        <button class="tablinks" onclick="toggleMessage()"></button>#}
+        <button class="tablinks" onclick="maxScore()">max</button>
+    </div>
+    <div class="second-tab" id="message-area">
+        <button class="tablinks" onclick="openFolder()">open folder</button>
+        <button class="tablinks" onclick="sendScore('comment')">send feedback</button>
+        <textarea id="score-comment">{{ score.comment }}</textarea>
+    </div>
+
+    <div id="index" class="tabcontent">
+        <iframe src="/submissions/{{ group["id"] }}/files/index.html"></iframe>
+    </div>
+
+    <div id="about" class="tabcontent">
+         <iframe id="about-frame" src="/submissions/{{ group["id"] }}/files/about.html"></iframe>
+    </div>
+
+<script>
+    function openTab(evt, cityName) {
+      // Declare all variables
+      var i, tabcontent, tablinks;
+
+      // Get all elements with class="tabcontent" and hide them
+      tabcontent = document.getElementsByClassName("tabcontent");
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+
+      // Get all elements with class="tablinks" and remove the class "active"
+      tablinks = document.getElementsByClassName("tablinks");
+      for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+
+      // Show the current tab, and add an "active" class to the button that opened the tab
+      document.getElementById(cityName).style.display = "block";
+      evt.currentTarget.className += " active";
+    }
+    document.getElementById("default-tab").click()
+    document.getElementById("score-comment").onkeyup = function(ev) {
+        if (ev.code === "Enter" && ev.ctrlKey) {
+            sendScore('comment')
+        }
+    }
+
+    function sendScore(component) {
+        const scoreElem = document.querySelector(`#score-${component}`)
+        const score = scoreElem.value
+        const ugh = {}
+        ugh[component] = score
+        fetch('./{{group["id"]}}/score', {
+            method: 'POST',
+            body: JSON.stringify(ugh)
+        }).then(e => {
+            if (!e.ok) {
+                alert('not saved')
+            } else if (component === 'comment') {
+                alert('comment sent')
+            }
+        })
+    }
+
+    function maxScore() {
+        document.getElementById('score-concept').value = 4
+        document.getElementById('score-design').value = 5
+        document.getElementById('score-functionality').value = 7
+        document.getElementById('score-report').value = 4
+        sendScores()
+    }
+
+    function toggleMessage() {
+        const e = document.getElementById('message-area')
+        e.hidden = !e.hidden
+    }
+
+    function sendScores() {
+        sendScore('concept')
+        sendScore('design')
+        sendScore('functionality')
+        sendScore('report')
+        sendScore('comment')
+    }
+
+    function openFolder() {
+        fetch(`./{{ group["id"] }}/open`)
+    }
+</script>
+</body>
+</html>
