@@ -1,18 +1,18 @@
-import os
 import json
 import subprocess
 
-from scores import Score, Scores
+from scores import Scores
 from flask import Flask, request, render_template, send_from_directory, redirect
-import config
+import paths
+
+
 app = Flask(__name__)
 
-groups_file = os.path.expanduser(config.groups_file)
-submissions_path = os.path.expanduser(config.submissions_path)
-scores_path = os.path.expanduser(config.scores_file)
-groups = json.loads(open(groups_file, 'r').read())
+project_files = paths.project_paths('~/dev/dt/data')
+groups = json.loads(open(project_files.groups_file, 'r').read())
 # print(groups)
-scores = Scores(scores_path)
+scores = Scores(project_files.scores_file)
+submissions_path = project_files.submissions_path
 
 
 @app.route("/submissions/<group_id>/files", defaults={"u_path": ""})
@@ -45,8 +45,8 @@ def open_folder(group_id):
 
 @app.route('/submissions/<group_id>/next')
 def next_submission(group_id):
-    index = next(i for i,v in enumerate(groups) if v["id"] == group_id)
-    next_group = groups[(index + 1 )% len(groups)]
+    index = next(i for i, v in enumerate(groups) if v["id"] == group_id)
+    next_group = groups[(index + 1) % len(groups)]
     return redirect('/submissions/' + next_group["id"])
 
 
@@ -61,8 +61,3 @@ def prev_submission(group_id):
 def view_submission(group_id):
     g = scores.get(group_id)
     return render_template('submission.html', group=g, score=g)
-
-
-@app.route('/submissions', methods=['POST'])
-def grade_submission(group_id):
-    return request.json

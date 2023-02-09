@@ -20,7 +20,6 @@ class Score:
             self.comment = dct_or_team_id["comment"]
 
 
-
 class ScoreEncoder(JSONEncoder):
     def default(self, score: Score):
         return score.__dict__
