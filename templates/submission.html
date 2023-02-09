@@ -69,8 +69,8 @@
     <div class="tab">
         <button class="tablinks" >{{ group["id"] }}</button>
         <button class="tablinks" onclick="window.location.href='../'">home</button>
-        <button class="tablinks" onclick="window.location.href='./{{ group["id"] }}/prev'">prev</button>
-        <button class="tablinks" onclick="window.location.href='./{{ group["id"] }}/next'">next</button>
+        <button class="tablinks" onclick="goToSubmission('prev')">prev</button>
+        <button class="tablinks" onclick="goToSubmission('next')">next</button>
         <button class="tablinks" id="default-tab" onclick="openTab(event, 'index')">index</button>
         <button class="tablinks" onclick="openTab(event, 'about')">about</button>
         <button class="tablinks" >{{ group["name"] }}</button>
@@ -140,7 +140,7 @@
             if (!e.ok) {
                 alert('not saved')
             } else if (component === 'comment') {
-                alert('comment sent')
+                console.log(component + ' sent')
             }
         })
     }
@@ -148,8 +148,8 @@
     function maxScore() {
         document.getElementById('score-concept').value = 4
         document.getElementById('score-design').value = 5
-        document.getElementById('score-functionality').value = 7
-        document.getElementById('score-report').value = 4
+        document.getElementById('score-functionality').value = 5
+        document.getElementById('score-report').value = 6
         sendScores()
     }
 
@@ -168,6 +168,11 @@
 
     function openFolder() {
         fetch(`./{{ group["id"] }}/open`)
+    }
+
+    function goToSubmission(prevOrNext) {
+        sendScores()
+        window.location.href='./{{ group["id"] }}/' + prevOrNext
     }
 </script>
 </body>
