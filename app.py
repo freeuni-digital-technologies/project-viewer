@@ -8,7 +8,7 @@ import paths
 
 app = Flask(__name__)
 
-project_files = paths.project_paths('~/dev/dt/data')
+project_files = paths.project_paths()
 groups = json.loads(open(project_files.groups_file, 'r').read())
 # print(groups)
 scores = Scores(project_files.scores_file)

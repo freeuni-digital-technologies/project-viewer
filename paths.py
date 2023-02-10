@@ -10,7 +10,7 @@ class ProjectPaths:
     groups_file: str = ''
 
 
-def project_paths(data_path: str) -> ProjectPaths:
+def project_paths(data_path: str = '~/dev/dt/data') -> ProjectPaths:
     paths = ProjectPaths()
     data_path = os.path.expanduser(data_path)
     paths.scores_file = data_path + "/manualResults/project_scores.json"
